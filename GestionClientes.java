@@ -32,7 +32,7 @@ public class GestionClientes {
         
         Scanner in = new Scanner(System.in);
             
-        int opcion = pideInt("Elige una opción: ");
+        int opcion = pideInt("Elige una opcion: ");
         
         switch (opcion) {
             case 1:
@@ -50,7 +50,7 @@ public class GestionClientes {
             case 5:
                 return true;
             default:
-                System.out.println("Opción elegida incorrecta");
+                System.out.println("Opcion elegida incorrecta");
                 return false;
         }
         
@@ -66,7 +66,7 @@ public class GestionClientes {
                 //in.nextLine();
                 return valor;
             } catch (Exception e) {
-                System.out.println("No has introducido un número entero. Vuelve a intentarlo.");
+                System.out.println("No has introducido un numero entero. Vuelve a intentarlo.");
             }
         }
     }
@@ -95,7 +95,7 @@ public class GestionClientes {
 
         System.out.println("Introduce los datos del nuevo cliente:");
         String nombre = pideLinea("Nombre: ");
-        String direccion = pideLinea("Dirección: ");
+        String direccion = pideLinea("Direccion: ");
 
         boolean res = DBManager.insertCliente(nombre, direccion);
 
@@ -122,7 +122,7 @@ public class GestionClientes {
 
         // Solicitamos los nuevos datos
         String nombre = pideLinea("Nuevo nombre: ");
-        String direccion = pideLinea("Nueva dirección: ");
+        String direccion = pideLinea("Nueva direccion: ");
 
         // Registramos los cambios
         boolean res = DBManager.updateCliente(id, nombre, direccion);

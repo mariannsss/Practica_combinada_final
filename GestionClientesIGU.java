@@ -10,7 +10,7 @@ public class GestionClientesIGU extends javax.swing.JFrame {
 
     public GestionClientesIGU() {
 
-        // Inicilización de componentes gráficos
+        // Inicilizacion de componentes graficos
         initComponents();
 
         // Cargamos driver y conectamos con la BD
@@ -301,7 +301,7 @@ public class GestionClientesIGU extends javax.swing.JFrame {
         lblNombreCliente.setText("     ");
 
         lblDireccion.setFont(new java.awt.Font("Noto Sans", 1, 12)); // NOI18N
-        lblDireccion.setText("Dirección:");
+        lblDireccion.setText("Direccion:");
 
         lblDireccionCliente.setText("     ");
 
@@ -424,7 +424,7 @@ public class GestionClientesIGU extends javax.swing.JFrame {
             ex.printStackTrace();
         }
 
-        // Cerramos la conexión a la base de datos
+        // Cerramos la conexion a la base de datos
         DBManager.close();
     }//GEN-LAST:event_formWindowClosed
 
@@ -518,7 +518,7 @@ public class GestionClientesIGU extends javax.swing.JFrame {
         String nombre = "";
         String direccion = "";
 
-        // Obtenemos los datos del cliente actual (si es válido)
+        // Obtenemos los datos del cliente actual (si es valido)
         if (clienteValido) {
             try {
                 id = rsClientes.getInt("id");
@@ -539,7 +539,7 @@ public class GestionClientesIGU extends javax.swing.JFrame {
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
 
         if (!clienteValido) {
-            muestraVentanaAviso("No se puede editar el cliente.\n¿Es posible que no haya clientes?");
+            muestraVentanaAviso("No se puede editar el cliente.\n �Es posible que no haya clientes?");
         } else {
 
             try {
@@ -566,12 +566,12 @@ public class GestionClientesIGU extends javax.swing.JFrame {
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
 
         if (!clienteValido) {
-            muestraVentanaAviso("No se puede eliminar el cliente.\n¿Es posible que no haya clientes?");
+            muestraVentanaAviso("No se puede eliminar el cliente.\n�Es posible que no haya clientes?");
         } else {
             // Ventana para que el usuario confirme
-            boolean aceptado = muestraVentanaAceptarCancelar("¿Está seguro de que desea eliminar el cliente?");
+            boolean aceptado = muestraVentanaAceptarCancelar("�Esta seguro de que desea eliminar el cliente?");
 
-            // Si respondió que sí, eliminamos el cliente y actualizamos datos
+            // Si respondio que si, eliminamos el cliente y actualizamos datos
             if (aceptado) {
                 try {
                     // Eliminamos el cliente actual
@@ -593,7 +593,7 @@ public class GestionClientesIGU extends javax.swing.JFrame {
         // Ocultamos ventana principal
         this.setVisible(false);
 
-        // Mostramos ventana de nuevo cliente con campos vacíos
+        // Mostramos ventana de nuevo cliente con campos vacios
         txtVNCNombre.setText("");
         txtVNCDireccion.setText("");
         jfNuevoCliente.setVisible(true);
@@ -609,7 +609,7 @@ public class GestionClientesIGU extends javax.swing.JFrame {
         jfNuevoCliente.setVisible(false);
         this.setVisible(true);
 
-        // Actualizamos datos y mostramos el último
+        // Actualizamos datos y mostramos el ultimo
         obtenerClientes();
         muestraClienteUltimo();
     }//GEN-LAST:event_btnVNCAceptarActionPerformed
@@ -630,7 +630,7 @@ public class GestionClientesIGU extends javax.swing.JFrame {
         jfEditarCliente.setVisible(false);
         this.setVisible(true);
 
-        // Actualizamos datos y mostramos el último
+        // Actualizamos datos y mostramos el ultimo
         obtenerClientes();
         muestraClientePrimero();
     }//GEN-LAST:event_btnVECAceptarActionPerformed
@@ -657,9 +657,9 @@ public class GestionClientesIGU extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(this, mensaje, "Aviso", JOptionPane.WARNING_MESSAGE);
     }
     
-    // Muestra una ventana de aceptar/cancelar y devuelve true si le dió a aceptar
+    // Muestra una ventana de aceptar/cancelar y devuelve true si le dio a aceptar
     private boolean muestraVentanaAceptarCancelar(String mensaje) {
-        int result = JOptionPane.showConfirmDialog(this, mensaje, "Confirme la acción", JOptionPane.OK_CANCEL_OPTION);
+        int result = JOptionPane.showConfirmDialog(this, mensaje, "Confirme la accion", JOptionPane.OK_CANCEL_OPTION);
         return (result == 0);
     }
 
