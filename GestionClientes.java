@@ -2,26 +2,45 @@
 import java.util.Scanner;
 
 /**
+ *Esta clase se encarga de interactuar con el cliente y llamar a los metodos de la clase DBManager
  *
  * @author lionel
+ * @version 1.0
  */
-public class GestionClientes {
-
-    public static void main(String[] args) {
-
-        DBManager.loadDriver();
+public class GestionClientes 
+{
+	/**
+	 * Clase principal. Establece la conexion y llama al menu
+	 * 
+	 * @author lionel
+	 * @version 1.0
+	 * @param args
+	 */
+    public static void main(String[] args) 
+    {
+        //DBManager.loadDriver(); esta obsoleto
         DBManager.connect();
 
         boolean salir = false;
-        do {
+        do 
+        {
             salir = menuPrincipal();
+            
         } while (!salir);
 
-        DBManager.close();
-
+        DBManager.close(); //cierra la conexion
     }
 
-    public static boolean menuPrincipal() {
+    /**
+     * Muestra el menu al usuario
+     * llama a pideInt para obtener la opcion elegida
+     * 
+     * @author lionel
+     * @version 1.0
+     * @return varia en cada opcion
+     */
+    public static boolean menuPrincipal() 
+    {
         System.out.println("");
         System.out.println("MENU PRINCIPAL");
         System.out.println("1. Listar clientes");
@@ -32,9 +51,10 @@ public class GestionClientes {
         
         Scanner in = new Scanner(System.in);
             
-        int opcion = pideInt("Elige una opcion: ");
+        int opcion = pideInt("Elige una opcion (número): ");
         
-        switch (opcion) {
+        switch (opcion) 
+        {
             case 1:
                 opcionMostrarClientes();
                 return false;
@@ -52,45 +72,82 @@ public class GestionClientes {
             default:
                 System.out.println("Opcion elegida incorrecta");
                 return false;
-        }
-        
+        }        
     }
     
-    public static int pideInt(String mensaje){
-        
-        while(true) {
-            try {
+    /**
+     * Pide un numero (opcion del menu)
+     * 
+     * @author lionel
+     * @version 1.0
+     * @param mensaje
+     * @return valor. devuelve el numero de la opcion elegida
+     * @throws Exception. No se ha introducido un entero
+     */
+    public static int pideInt (String mensaje)
+    {        
+        while (true) 
+        {
+            try 
+            {
                 System.out.print(mensaje);
                 Scanner in = new Scanner(System.in);
                 int valor = in.nextInt();
                 //in.nextLine();
                 return valor;
-            } catch (Exception e) {
+            } 
+            catch (Exception e) {
                 System.out.println("No has introducido un numero entero. Vuelve a intentarlo.");
             }
         }
     }
     
-    public static String pideLinea(String mensaje){
-        
-        while(true) {
-            try {
+    /**
+     * pide un String (cadena de texto)
+     * 
+     * @author lionel
+     * @version 1.0
+     * @return linea. devuelve un String
+     * @throws Exception. No se ha introducido un String
+     */
+    public static String pideLinea (String mensaje)
+    {        
+        while(true) 
+        {
+            try 
+            {
                 System.out.print(mensaje);
                 Scanner in = new Scanner(System.in);
                 String linea = in.nextLine();
                 return linea;
-            } catch (Exception e) {
+            } 
+            catch (Exception e) {
                 System.out.println("No has introducido una cadena de texto. Vuelve a intentarlo.");
             }
         }
     }
 
-    public static void opcionMostrarClientes() {
+    /**
+     * Llama a printTablaClientes y muestra la tabla clientes
+     * 
+     * @author lionel
+     * @version 1.0
+     */
+    public static void opcionMostrarClientes() 
+    {
         System.out.println("Listado de Clientes:");
         DBManager.printTablaClientes();
     }
 
-    public static void opcionNuevoCliente() {
+    /**
+     * Pide los datos para crear un nuevo registro en la tabla clientes
+     * llama a pideLinea para obtener los parametros necesarios
+     * 
+     * @author lionel
+     * @version 1.0
+     */
+    public static void opcionNuevoCliente() 
+    {
         Scanner in = new Scanner(System.in);
 
         System.out.println("Introduce los datos del nuevo cliente:");
@@ -99,20 +156,33 @@ public class GestionClientes {
 
         boolean res = DBManager.insertCliente(nombre, direccion);
 
-        if (res) {
+        if (res) 
+        {
             System.out.println("Cliente registrado correctamente");
-        } else {
+        } 
+        else 
+        {
             System.out.println("Error :(");
         }
     }
 
-    public static void opcionModificarCliente() {
+    /**
+     * Modifica un cliente de la tabla clientes
+     * llama a pideInt para obtener el id del cliente a modificar
+     * llama a pideLinea para obtener los los nuevos valores
+     * 
+     * @author lionel
+     * @version 1.0
+     */
+    public static void opcionModificarCliente() 
+    {
         Scanner in = new Scanner(System.in);
 
         int id = pideInt("Indica el id del cliente a modificar: ");
 
         // Comprobamos si existe el cliente
-        if (!DBManager.existsCliente(id)) {
+        if (!DBManager.existsCliente(id)) 
+        {
             System.out.println("El cliente " + id + " no existe.");
             return;
         }
@@ -127,20 +197,32 @@ public class GestionClientes {
         // Registramos los cambios
         boolean res = DBManager.updateCliente(id, nombre, direccion);
 
-        if (res) {
+        if (res) 
+        {
             System.out.println("Cliente modificado correctamente");
-        } else {
+        } 
+        else 
+        {
             System.out.println("Error :(");
         }
     }
 
-    public static void opcionEliminarCliente() {
+    /**
+     * Elimina un cliente de la tabla clientes
+     * llama a pideInt para obtener el id del cliente a borrar
+     * 
+     * @author lionel
+     * @version 1.0
+     */
+    public static void opcionEliminarCliente() 
+    {
         Scanner in = new Scanner(System.in);
 
         int id = pideInt("Indica el id del cliente a eliminar: ");
 
         // Comprobamos si existe el cliente
-        if (!DBManager.existsCliente(id)) {
+        if (!DBManager.existsCliente(id)) 
+        {
             System.out.println("El cliente " + id + " no existe.");
             return;
         }
@@ -148,9 +230,12 @@ public class GestionClientes {
         // Eliminamos el cliente
         boolean res = DBManager.deleteCliente(id);
 
-        if (res) {
+        if (res) 
+        {
             System.out.println("Cliente eliminado correctamente");
-        } else {
+        } 
+        else 
+        {
             System.out.println("Error :(");
         }
     }
