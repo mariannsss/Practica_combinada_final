@@ -1,3 +1,4 @@
+package GestionBD;
 
 import java.sql.DriverManager;
 import java.sql.Connection;
@@ -11,8 +12,8 @@ import java.sql.ResultSet;
  * @author lionel
  * @version 1.0
  */
-public class DBManager {
-
+public class DBManager 
+{
     // Conexion a la base de datos
     private static Connection conn = null;
 
@@ -76,7 +77,8 @@ public class DBManager {
      * @return true si pudo conectarse, false en caso contrario
      * @throws SQLException. Error en la conexion
      */
-    public static boolean connect() {
+    public static boolean connect() 
+    {
         try 
         {
             System.out.print("Conectando a la base de datos...");
@@ -128,7 +130,8 @@ public class DBManager {
      */
     public static void close() 
     {
-        try {
+        try 
+        {
             System.out.print("Cerrando la conexion...");
             conn.close();
             System.out.println("OK!");

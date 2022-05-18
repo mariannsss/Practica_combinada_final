@@ -2,6 +2,9 @@
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
+
+import GestionBD.DBManager;
+
 /**
  * Interfaz Grafica para interactuar con la tabla clientes
  * 
