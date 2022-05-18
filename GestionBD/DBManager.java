@@ -449,4 +449,40 @@ public class DBManager {
             return false;
         }
     }
+    
+    
+    //////////////////////////////////////////////////
+    // OTROS  METODOS
+    //////////////////////////////////////////////////
+    
+    /**
+     * Solicita a la BD los 5 primeros clientes mediante un procedimiento almacenado
+     * 
+     * @author marian
+     * @version 1.0
+     * @throws SQLException
+     */
+    public static void primerosClientes()
+    {
+    	try 
+    	{
+    		//llamamos al procedimiento almacenado
+			CallableStatement cstmt = conn.prepareCall("{CALL primeros_clientes}");
+			ResultSet rs = cstmt.executeQuery();
+			
+			// Imprimimos su informacion por pantalla
+			while (rs.next())
+			{
+				int cid = rs.getInt(DB_CLI_ID);
+				String nombre = rs.getString(DB_CLI_NOM);
+				String direccion = rs.getString(DB_CLI_DIR);
+				System.out.println("Cliente " + cid + "\t" + nombre + "\t" + direccion);
+			}
+			rs.close();
+		} 
+    	catch (SQLException ex) {
+    		System.out.println("Exception. fallo al llamar al procedimiento almacenado");
+			ex.printStackTrace();
+		}
+    }
 }

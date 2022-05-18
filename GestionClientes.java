@@ -6,16 +6,16 @@ import GestionBD.DBManager;
 /**
  *Esta clase se encarga de interactuar con el cliente y llamar a los metodos de la clase DBManager
  *
- * @author lionel
- * @version 1.0
+ * @author marian
+ * @version 1.1
  */
 public class GestionClientes 
 {
 	/**
 	 * Clase principal. Establece la conexion y llama al menu
 	 * 
-	 * @author lionel
-	 * @version 1.0
+	 * @author Marian
+	 * @version 1.1
 	 * @param args
 	 */
     public static void main(String[] args) 
@@ -37,19 +37,20 @@ public class GestionClientes
      * Muestra el menu al usuario
      * llama a pideInt para obtener la opcion elegida
      * 
-     * @author lionel
-     * @version 1.0
+     * @author Marian
+     * @version 1.2
      * @return varia en cada opcion
      */
     public static boolean menuPrincipal() 
     {
         System.out.println("");
         System.out.println("MENU PRINCIPAL");
+        System.out.println("0. Salir");
         System.out.println("1. Listar clientes");
         System.out.println("2. Nuevo cliente");
         System.out.println("3. Modificar cliente");
         System.out.println("4. Eliminar cliente");
-        System.out.println("5. Salir");
+        System.out.println("5. Muestra los primeros 5 clientes"); //usa CallableStatement
         
         Scanner in = new Scanner(System.in);
             
@@ -57,6 +58,8 @@ public class GestionClientes
         
         switch (opcion) 
         {
+	        case 0:
+	            return true;
             case 1:
                 opcionMostrarClientes();
                 return false;
@@ -70,7 +73,8 @@ public class GestionClientes
                 opcionEliminarCliente();
                 return false;
             case 5:
-                return true;
+            	opcionPrimerosClientes();
+            	return false;
             default:
                 System.out.println("Opcion elegida incorrecta");
                 return false;
@@ -80,8 +84,8 @@ public class GestionClientes
     /**
      * Pide un numero (opcion del menu)
      * 
-     * @author lionel
-     * @version 1.0
+     * @author marian
+     * @version 1.1
      * @param mensaje
      * @return valor. devuelve el numero de la opcion elegida
      * @throws Exception. No se ha introducido un entero
@@ -107,8 +111,8 @@ public class GestionClientes
     /**
      * pide un String (cadena de texto)
      * 
-     * @author lionel
-     * @version 1.0
+     * @author marian
+     * @version 1.1
      * @return linea. devuelve un String
      * @throws Exception. No se ha introducido un String
      */
@@ -132,8 +136,8 @@ public class GestionClientes
     /**
      * Llama a printTablaClientes y muestra la tabla clientes
      * 
-     * @author lionel
-     * @version 1.0
+     * @author marian
+     * @version 1.1
      */
     public static void opcionMostrarClientes() 
     {
@@ -145,8 +149,8 @@ public class GestionClientes
      * Pide los datos para crear un nuevo registro en la tabla clientes
      * llama a pideLinea para obtener los parametros necesarios
      * 
-     * @author lionel
-     * @version 1.0
+     * @author marian
+     * @version 1.1
      */
     public static void opcionNuevoCliente() 
     {
@@ -173,8 +177,8 @@ public class GestionClientes
      * llama a pideInt para obtener el id del cliente a modificar
      * llama a pideLinea para obtener los los nuevos valores
      * 
-     * @author lionel
-     * @version 1.0
+     * @author marian
+     * @version 1.1
      */
     public static void opcionModificarCliente() 
     {
@@ -213,8 +217,8 @@ public class GestionClientes
      * Elimina un cliente de la tabla clientes
      * llama a pideInt para obtener el id del cliente a borrar
      * 
-     * @author lionel
-     * @version 1.0
+     * @author marian
+     * @version 1.1
      */
     public static void opcionEliminarCliente() 
     {
@@ -240,5 +244,17 @@ public class GestionClientes
         {
             System.out.println("Error :(");
         }
+    }
+    
+    /**
+     * Llama a primerosClientes y muestra  los 5 primeros clientes de la tabla clientes
+     * 
+     * marian
+     * @version 1.1
+     */
+    public static void opcionPrimerosClientes() 
+    {
+    	System.out.println("Listado de los 5 primeros Clientes:");
+    	DBManager.primerosClientes();
     }
 }
