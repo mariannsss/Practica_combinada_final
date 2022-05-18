@@ -10,3 +10,10 @@ Corregimos los errores en los comentarios y print generados al copiar el codigo 
 Editamos o añadimos los comentarios para javadoc
 
 Separamos la rama gráfica de la rama principal
+
+Metemos DBManager en un paquete
+
+Cambiamos la clase Statement por PreparedStatement y los cambios necesarios derivados de ello.
+Añadimos prints a las excepciones para saber cual salta (esto luego puede que desaparesca)
+
+Creamos una nueva opción en el menu para mostrar los primeros 5 clientes usando un procedimiento almacenado y la Clase CallableStatement.
