@@ -1,6 +1,8 @@
 
 import java.util.Scanner;
 
+import GestionBD.DBManager;
+
 /**
  *Esta clase se encarga de interactuar con el cliente y llamar a los metodos de la clase DBManager
  *

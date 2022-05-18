@@ -1,15 +1,11 @@
-
-import java.sql.DriverManager;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.ResultSet;
+package GestionBD;
+import java.sql.*;
 
 /**
  * Esta clase se encarga de interactuar con la Base de Datos
  * 
- * @author lionel
- * @version 1.0
+ * @author marian
+ * @version 1.2
  */
 public class DBManager {
 
@@ -30,6 +26,7 @@ public class DBManager {
     // Configuracion de la tabla Clientes
     private static final String DB_CLI = "clientes";
     private static final String DB_CLI_SELECT = "SELECT * FROM " + DB_CLI;
+    private static final String DB_CLI_WHERE = "WHERE nombre = ? AND direccion = ?";
     private static final String DB_CLI_ID = "id";
     private static final String DB_CLI_NOM = "nombre";
     private static final String DB_CLI_DIR = "direccion";
@@ -42,7 +39,7 @@ public class DBManager {
     /**
      * Intenta cargar el JDBC driver.
      * 
-     *  @author lionel
+     * @author lionel
      * @version 1.0
      * @return true si pudo cargar el driver, false en caso contrario
      * @throws ClassNotFoundException
@@ -59,10 +56,12 @@ public class DBManager {
             return true;
         } 
         catch (ClassNotFoundException ex) {
+        	System.out.println("Exception. fallo al con los parametros del driver");
             ex.printStackTrace();
             return false;
         } 
         catch (Exception ex) {
+        	System.out.println("Exception. fallo al cargar el driver");
             ex.printStackTrace();
             return false;
         }
@@ -71,8 +70,8 @@ public class DBManager {
     /**
      * Intenta conectar con la base de datos.
      *
-     * @author lionel
-     * @version 1.0
+     * @author marian
+     * @version 1.1
      * @return true si pudo conectarse, false en caso contrario
      * @throws SQLException. Error en la conexion
      */
@@ -85,6 +84,7 @@ public class DBManager {
             return true;
         } 
         catch (SQLException ex) {
+        	System.out.println("Exception. Ha habido un error al conectar");
             ex.printStackTrace();
             return false;
         }
@@ -93,8 +93,8 @@ public class DBManager {
     /**
      * Comprueba la conexion y muestra su estado por pantalla
      *
-     * @author lionel
-     * @version 1.0
+     * @author marian
+     * @version 1.1
      * @return true si la conexion existe y es valida, false en caso contrario
      * @throws SQLException. Error en la conexion
      */
@@ -113,7 +113,7 @@ public class DBManager {
             }
         } 
         catch (SQLException ex) {
-            System.out.println(DB_MSQ_CONN_NO);
+            System.out.println("Exception." + DB_MSQ_CONN_NO);
             ex.printStackTrace();
             return false;
         }
@@ -122,8 +122,8 @@ public class DBManager {
     /**
      * Cierra la conexion con la base de datos
      * 
-     * @author lionel
-     * @version 1.0
+     * @author marian
+     * @version 1.1
      * @throws SQLException. Error en la conexion
      */
     public static void close() 
@@ -134,6 +134,7 @@ public class DBManager {
             System.out.println("OK!");
         } 
         catch (SQLException ex) {
+        	System.out.println("Exception. Ha habido un error al cerrar la conexion");
             ex.printStackTrace();
         }
     }
@@ -149,53 +150,38 @@ public class DBManager {
     /**
      * Obtiene toda la tabla clientes de la base de datos
      * 
-     * @author lionel
-     * @version 1.0
-     * @param resultSetType Tipo de ResultSet
-     * @param resultSetConcurrency Concurrencia del ResultSet
+     * @author marian
+     * @version 1.2
      * @return ResultSet (del tipo indicado) con la tabla, null en caso de error
-     * @throws SQLException.
-     */
-    public static ResultSet getTablaClientes(int resultSetType, int resultSetConcurrency) 
-    {
-        try 
-        {
-            Statement stmt = conn.createStatement(resultSetType, resultSetConcurrency);
-            ResultSet rs = stmt.executeQuery(DB_CLI_SELECT);
-            //stmt.close();
-            return rs;
-        } 
-        catch (SQLException ex) {
-            ex.printStackTrace();
-            return null;
-        }
-    }
-
-    /**
-     * Obtiene toda la tabla clientes de la base de datos
-     *
-     * @author lionel
-     * @version 1.0
-     * @return ResultSet (por defecto) con la tabla, null en caso de error
      * @throws SQLException.
      */
     public static ResultSet getTablaClientes() 
     {
-        return getTablaClientes(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+        try 
+        {
+        	PreparedStatement pstmt = conn.prepareStatement(DB_CLI_SELECT);
+            ResultSet rs = pstmt.executeQuery();
+            return rs;
+        } 
+        catch (SQLException ex) {
+        	System.out.println("Exception. Ha habido un error al solicitar la tabla");
+            ex.printStackTrace();
+            return null;
+        }
     }
-
+    
     /**
      * Imprime por pantalla el contenido de la tabla clientes
      * 
-     * @author lionel
-     * @version 1.0
+     * @author marian
+     * @version 1.2
      * @throws SQLException
      */
     public static void printTablaClientes() 
     {
         try 
         {
-            ResultSet rs = getTablaClientes(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+            ResultSet rs = getTablaClientes();
             while (rs.next()) 
             {
                 int id = rs.getInt(DB_CLI_ID);
@@ -206,6 +192,7 @@ public class DBManager {
             rs.close();
         } 
         catch (SQLException ex) {
+        	System.out.println("Exception. Ha habido un error al mostrar la tabla");
             ex.printStackTrace();
         }
     }
@@ -218,8 +205,8 @@ public class DBManager {
     /**
      * Solicita a la BD el cliente con id indicado
      * 
-     * @author lionel
-     * @version 1.0  
+     * @author marian
+     * @version 1.2
      * @param id. id del cliente
      * @return ResultSet con el resultado de la consulta, null en caso de error
      * @throws SQLException
@@ -229,16 +216,14 @@ public class DBManager {
         try 
         {
             // Realizamos la consulta SQL
-            Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
-            String sql = DB_CLI_SELECT + " WHERE " + DB_CLI_ID + "='" + id + "';";
-            //System.out.println(sql);
-            ResultSet rs = stmt.executeQuery(sql);
-            //stmt.close();
+        	PreparedStatement pstmt = conn.prepareStatement(DB_CLI_SELECT + " WHERE " + DB_CLI_ID + "='" + id + "';");            
+            ResultSet rs = pstmt.executeQuery();
             
             // Si no hay primer registro entonces no existe el cliente
             if (!rs.first()) 
             {
-                return null;
+            	System.out.println("cliente no registrado");
+            	return null;
             }
 
             // Todo bien, devolvemos el cliente
@@ -246,6 +231,7 @@ public class DBManager {
 
         } 
         catch (SQLException ex) {
+        	System.out.println("Exception. Hubo algun error al buscar al cliente");
             ex.printStackTrace();
             return null;
         }
@@ -254,8 +240,8 @@ public class DBManager {
     /**
      * Comprueba si en la BD existe el cliente con id indicado
      *
-     * @author lionel
-     * @version 1.0
+     * @author marian
+     * @version 1.2
      * @param id id del cliente
      * @return verdadero si existe, false en caso contrario
      * @throws SQLException
@@ -270,22 +256,26 @@ public class DBManager {
             // Si rs es null, se ha producido un error
             if (rs == null) 
             {
-                return false;
+            	System.out.println("hubo algun error. vuelva a comprobar si el cliente existe");
+            	return false;
             }
 
             // Si no existe primer registro
             if (!rs.first()) 
             {
+            	System.out.println("el cliente no existe");
                 rs.close();
                 return false;
             }
 
             // Todo bien, existe el cliente
             rs.close();
+            System.out.println("el cliente si existe");
             return true;
 
         } 
         catch (SQLException ex) {
+        	System.out.println("Exception. hubo algun error al comprobar si el cliente existe");
             ex.printStackTrace();
             return false;
         }
@@ -294,8 +284,8 @@ public class DBManager {
     /**
      * Imprime los datos del cliente con id indicado
      *
-     * @author lionel
-     * @version 1.0
+     * @author marian
+     * @version 1.1
      * @param id id del cliente
      * @throws SQLException
      */
@@ -321,7 +311,7 @@ public class DBManager {
 
         } 
         catch (SQLException ex) {
-            System.out.println("Error al solicitar cliente " + id);
+            System.out.println("Exception. Error al solicitar cliente " + id);
             ex.printStackTrace();
         }
     }
@@ -329,10 +319,10 @@ public class DBManager {
     /**
      * Solicita a la BD insertar un nuevo registro cliente
      *
-     * @author lionel
-     * @version 1.0
-     * @param nombre nombre del cliente
-     * @param direccion direccion del cliente
+     * @author marian
+     * @version 1.1
+     * @param nombre. nombre del cliente
+     * @param direccion. direccion del cliente
      * @return verdadero si pudo insertarlo, false en caso contrario
      * @throws SQLException
      */
@@ -342,7 +332,7 @@ public class DBManager {
         {
             // Obtenemos la tabla clientes
             System.out.print("Insertando cliente " + nombre + "...");
-            ResultSet rs = getTablaClientes(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
+            ResultSet rs = getTablaClientes();
 
             // Insertamos el nuevo registro
             rs.moveToInsertRow();
@@ -357,6 +347,7 @@ public class DBManager {
 
         } 
         catch (SQLException ex) {
+        	System.out.println("Exception. fallo al insertar cliente");
             ex.printStackTrace();
             return false;
         }
@@ -365,8 +356,8 @@ public class DBManager {
     /**
      * Solicita a la BD modificar los datos de un cliente
      *
-     * @author lionel
-     * @version 1.0
+     * @author marian
+     * @version 1.1
      *
      * @param id id del cliente a modificar
      * @param nombre nuevo nombre del cliente
@@ -406,6 +397,7 @@ public class DBManager {
             }
         } 
         catch (SQLException ex) {
+        	System.out.println("Exception. fallo al actualizar cliente");
             ex.printStackTrace();
             return false;
         }
@@ -414,8 +406,8 @@ public class DBManager {
     /**
      * Solicita a la BD eliminar un cliente
      *
-     * @author lionel
-     * @version 1.0
+     * @author marian
+     * @version 1.1
      * 
      * @param id. id del cliente a eliminar
      * @return verdadero si pudo eliminarlo, false en caso contrario
@@ -452,6 +444,7 @@ public class DBManager {
             }
         } 
         catch (SQLException ex) {
+        	System.out.println("Exception. fallo al borrar cliente");
             ex.printStackTrace();
             return false;
         }
