@@ -17,3 +17,7 @@ Cambiamos la clase Statement por PreparedStatement y los cambios necesarios deri
 Añadimos prints a las excepciones para saber cual salta (esto luego puede que desaparesca)
 
 Creamos una nueva opción en el menu para mostrar los primeros 5 clientes usando un procedimiento almacenado y la Clase CallableStatement.
+
+Creamos una nueva opcion en el menu para crear una tabla nueva 
+Creamos una nueva opcion en el menu para filtrar filas
+Creamos un nuevo menu para elegir base de datos y una nueva clase BBDD
