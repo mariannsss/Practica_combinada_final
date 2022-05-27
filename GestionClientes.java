@@ -1,7 +1,6 @@
-
-import java.util.Scanner;
-
 import GestionBD.DBManager;
+import GestionBD.BBDD;
+import java.util.Scanner;
 
 /**
  *Esta clase se encarga de interactuar con el cliente y llamar a los metodos de la clase DBManager
@@ -11,6 +10,8 @@ import GestionBD.DBManager;
  */
 public class GestionClientes 
 {
+	//private BBDD bbdd;
+	
 	/**
 	 * Clase principal. Establece la conexion y llama al menu
 	 * 
@@ -20,10 +21,16 @@ public class GestionClientes
 	 */
     public static void main(String[] args) 
     {
-        //DBManager.loadDriver(); esta obsoleto
-        DBManager.connect();
-
+    	// Menu para seleccionar la BBDD
         boolean salir = false;
+        do 
+        {
+            salir = menuBBDD();
+
+        } while (!salir);
+
+        salir = false;
+
         do 
         {
             salir = menuPrincipal();
@@ -31,6 +38,46 @@ public class GestionClientes
         } while (!salir);
 
         DBManager.close(); //cierra la conexion
+    }
+    
+    /**
+     * Clase principal BBDD. Establece el nombre de la BBDD
+     * @author Marian
+	 * @version 1.1
+     * @return
+     */
+    public static boolean menuBBDD() 
+    {
+    	 System.out.println("");
+         System.out.println("MENU BBDD");
+         System.out.println("0. Salir");
+         System.out.println("1. nombre BBDD");
+         
+         Scanner in = new Scanner(System.in);
+         
+         System.out.println();
+         int opcion = pideInt("Elige una opcion (número): ");
+         
+         switch (opcion) 
+         {
+ 	        case 0:
+ 	            return true;
+             case 1:
+                DBManager.connect(nombreBBDD());
+                return false;
+             default:
+                 System.out.println("Opcion elegida incorrecta");
+                 return false;
+         }
+    }
+    
+    
+    public static String nombreBBDD() {
+    	
+        System.out.print("Indique el nombre de la BBDD: ");
+        Scanner in = new Scanner(System.in);
+        String nombre = in.nextLine();
+        return nombre;    	
     }
 
     /**
@@ -51,9 +98,12 @@ public class GestionClientes
         System.out.println("3. Modificar cliente");
         System.out.println("4. Eliminar cliente");
         System.out.println("5. Muestra los primeros 5 clientes"); //usa CallableStatement
+        System.out.println("6. Crear una Tabla nueva");
+        System.out.println("7. Filtrar filas de una tabla");
         
         Scanner in = new Scanner(System.in);
             
+        System.out.println();
         int opcion = pideInt("Elige una opcion (número): ");
         
         switch (opcion) 
@@ -74,6 +124,12 @@ public class GestionClientes
                 return false;
             case 5:
             	opcionPrimerosClientes();
+            	return false;
+            case 6:
+            	opcionCrearTabla();
+            	return false;
+            case 7:
+            	opcionFiltrarFilas();
             	return false;
             default:
                 System.out.println("Opcion elegida incorrecta");
@@ -141,13 +197,15 @@ public class GestionClientes
      */
     public static void opcionMostrarClientes() 
     {
-        System.out.println("Listado de Clientes:");
+        System.out.println();
+    	System.out.println("Listado de Clientes:");
         DBManager.printTablaClientes();
     }
 
     /**
      * Pide los datos para crear un nuevo registro en la tabla clientes
      * llama a pideLinea para obtener los parametros necesarios
+     * llama a insertCliente para insertar el nuevo cliente
      * 
      * @author marian
      * @version 1.1
@@ -156,6 +214,7 @@ public class GestionClientes
     {
         Scanner in = new Scanner(System.in);
 
+        System.out.println();
         System.out.println("Introduce los datos del nuevo cliente:");
         String nombre = pideLinea("Nombre: ");
         String direccion = pideLinea("Direccion: ");
@@ -176,6 +235,7 @@ public class GestionClientes
      * Modifica un cliente de la tabla clientes
      * llama a pideInt para obtener el id del cliente a modificar
      * llama a pideLinea para obtener los los nuevos valores
+     * llama a updateCliente para actualizar los datos del cliente
      * 
      * @author marian
      * @version 1.1
@@ -185,6 +245,7 @@ public class GestionClientes
         Scanner in = new Scanner(System.in);
 
         int id = pideInt("Indica el id del cliente a modificar: ");
+        System.out.println();
 
         // Comprobamos si existe el cliente
         if (!DBManager.existsCliente(id)) 
@@ -216,6 +277,7 @@ public class GestionClientes
     /**
      * Elimina un cliente de la tabla clientes
      * llama a pideInt para obtener el id del cliente a borrar
+     * llama a deleteCliente para borrar el cliente indicado
      * 
      * @author marian
      * @version 1.1
@@ -225,6 +287,7 @@ public class GestionClientes
         Scanner in = new Scanner(System.in);
 
         int id = pideInt("Indica el id del cliente a eliminar: ");
+        System.out.println();
 
         // Comprobamos si existe el cliente
         if (!DBManager.existsCliente(id)) 
@@ -249,12 +312,51 @@ public class GestionClientes
     /**
      * Llama a primerosClientes y muestra  los 5 primeros clientes de la tabla clientes
      * 
-     * marian
+     * @authormarian
      * @version 1.1
      */
     public static void opcionPrimerosClientes() 
     {
+    	System.out.println();
     	System.out.println("Listado de los 5 primeros Clientes:");
     	DBManager.primerosClientes();
+    }
+    
+    /**
+     * Añade una nueva tabla a la base de datos
+     * llama a pideLinea para obtener el nombre de la nueva tabla
+     * llama a crearTabla y crea la tabla con el nombre solicitado
+     * 
+     * @author marian
+     * @version 1.0
+     */
+    public static void opcionCrearTabla ()
+    {
+    	Scanner in = new Scanner(System.in);
+
+        System.out.println();
+        String nombreTab = pideLinea("Nombre de la nueva tabla: ");
+        
+        DBManager.crearTabla(nombreTab);
+    }
+    
+    /**
+     * Filtra filas de una tabla, Muestra la fila indicada
+     * llama a pideInt para obtener el numero de fila
+     * llama a pideLinea para obtener le nombre de la tabla
+     * llama a filtrarFilas para buscar la fila
+     * 
+     * @author marian
+     * @version 1.1     * 
+     */
+    public static void opcionFiltrarFilas ()
+    {
+    	Scanner in = new Scanner(System.in);
+
+        System.out.println();
+        String nombreTab = pideLinea("Nombre de la tabla que quiere filtrar: ");
+        int numero = pideInt("Numero de fila que desea ver: ");
+        
+        DBManager.filtrarFilas(nombreTab, numero);
     }
 }

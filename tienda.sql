@@ -7,6 +7,10 @@
 -- Versión del servidor: 10.4.11-MariaDB
 -- Versión de PHP: 7.4.4
 
+DROP DATABASE IF EXISTS tienda;
+CREATE DATABASE tienda;
+
+use tienda;
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
@@ -20,9 +24,6 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `tienda`
 --
-CREATE DATABASE tienda;
-
-use tienda;
 
 -- --------------------------------------------------------
 
@@ -75,3 +76,15 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+
+DELIMITER $$
+use tienda$$
+DROP PROCEDURE IF EXISTS primeros_clientes$$
+CREATE PROCEDURE primeros_clientes()
+BEGIN 
+SELECT * 
+FROM clientes limit 5;
+END
+$$
+DELIMITER ;

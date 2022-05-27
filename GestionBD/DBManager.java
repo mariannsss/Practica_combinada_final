@@ -15,8 +15,7 @@ public class DBManager {
     // Configuracion de la conexion a la base de datos
     private static final String DB_HOST = "localhost";
     private static final String DB_PORT = "3306";
-    private static final String DB_NAME = "tienda";
-    private static final String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?serverTimezone=UTC";
+    
     private static final String DB_USER = "root";
     private static final String DB_PASS = "minamino";
     
@@ -25,7 +24,9 @@ public class DBManager {
 
     // Configuracion de la tabla Clientes
     private static final String DB_CLI = "clientes";
+    private static final String DB_CLI_INSERT = "INSERT INTO clientes (nombre, direccion) VALUES (?, ?)";
     private static final String DB_CLI_SELECT = "SELECT * FROM " + DB_CLI;
+    private static final String DB_SELECT = "SELECT * FROM ";
     private static final String DB_CLI_WHERE = "WHERE nombre = ? AND direccion = ?";
     private static final String DB_CLI_ID = "id";
     private static final String DB_CLI_NOM = "nombre";
@@ -75,8 +76,11 @@ public class DBManager {
      * @return true si pudo conectarse, false en caso contrario
      * @throws SQLException. Error en la conexion
      */
-    public static boolean connect() {
-        try 
+    public static boolean connect(String nombre) {
+    	String DB_NAME = nombre;
+        String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?serverTimezone=UTC";
+    	
+    	try 
         {
             System.out.print("Conectando a la base de datos...");
             conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
@@ -152,14 +156,16 @@ public class DBManager {
      * 
      * @author marian
      * @version 1.2
+     * @param resultSetType Tipo de ResultSet
+     * @param resultSetConcurrency Concurrencia del ResultSet
      * @return ResultSet (del tipo indicado) con la tabla, null en caso de error
      * @throws SQLException.
      */
-    public static ResultSet getTablaClientes() 
+    public static ResultSet getTablaClientes(int resultSetType, int resultSetConcurrency) 
     {
         try 
         {
-        	PreparedStatement pstmt = conn.prepareStatement(DB_CLI_SELECT);
+        	PreparedStatement pstmt = conn.prepareStatement(DB_CLI_SELECT, resultSetType, resultSetConcurrency);
             ResultSet rs = pstmt.executeQuery();
             return rs;
         } 
@@ -181,7 +187,7 @@ public class DBManager {
     {
         try 
         {
-            ResultSet rs = getTablaClientes();
+            ResultSet rs = getTablaClientes(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
             while (rs.next()) 
             {
                 int id = rs.getInt(DB_CLI_ID);
@@ -216,7 +222,8 @@ public class DBManager {
         try 
         {
             // Realizamos la consulta SQL
-        	PreparedStatement pstmt = conn.prepareStatement(DB_CLI_SELECT + " WHERE " + DB_CLI_ID + "='" + id + "';");            
+        	String sql = DB_CLI_SELECT + " WHERE " + DB_CLI_ID + "='" + id + "';";
+        	PreparedStatement pstmt = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);            
             ResultSet rs = pstmt.executeQuery();
             
             // Si no hay primer registro entonces no existe el cliente
@@ -228,7 +235,6 @@ public class DBManager {
 
             // Todo bien, devolvemos el cliente
             return rs;
-
         } 
         catch (SQLException ex) {
         	System.out.println("Exception. Hubo algun error al buscar al cliente");
@@ -331,20 +337,17 @@ public class DBManager {
         try 
         {
             // Obtenemos la tabla clientes
-            System.out.print("Insertando cliente " + nombre + "...");
-            ResultSet rs = getTablaClientes();
+            System.out.print("Insertando cliente " + nombre + "...");            
+            PreparedStatement pstmt = conn.prepareStatement(DB_CLI_INSERT, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
+            
+            //Insertamos el nuevo cliente
+            pstmt.setString(1, nombre);
+            pstmt.setString(2,direccion);            
+            int row = pstmt.executeUpdate();
 
-            // Insertamos el nuevo registro
-            rs.moveToInsertRow();
-            rs.updateString(DB_CLI_NOM, nombre);
-            rs.updateString(DB_CLI_DIR, direccion);
-            rs.insertRow();
-
-            // Todo bien, cerramos ResultSet y devolvemos true
-            rs.close();
+            System.out.println(row);
             System.out.println("OK!");
             return true;
-
         } 
         catch (SQLException ex) {
         	System.out.println("Exception. fallo al insertar cliente");
@@ -467,7 +470,7 @@ public class DBManager {
     	try 
     	{
     		//llamamos al procedimiento almacenado
-			CallableStatement cstmt = conn.prepareCall("{CALL primeros_clientes}");
+			CallableStatement cstmt = conn.prepareCall("{CALL primeros_clientes()}");
 			ResultSet rs = cstmt.executeQuery();
 			
 			// Imprimimos su informacion por pantalla
@@ -484,5 +487,65 @@ public class DBManager {
     		System.out.println("Exception. fallo al llamar al procedimiento almacenado");
 			ex.printStackTrace();
 		}
+    }
+    
+    /**
+     * Solicita a la BD crear una nueva tabla
+     * 
+     * @author marian
+     * @version 1.0
+     * @param nombreTabla. nombre de la nueva tabla
+     * @throws SQLException
+     */
+    public static void crearTabla (String nombreTabla)
+    {
+    	try 
+        {
+    		System.out.print("Insertando tabla " + nombreTabla + "... ");     
+        	String sql = "CREATE TABLE " + nombreTabla + "(`id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT);";
+    		PreparedStatement pstmt = conn.prepareStatement(sql);
+    		int row = pstmt.executeUpdate();
+            System.out.println("ok");
+           
+        } 
+        catch (SQLException ex) {
+        	System.out.println("Exception. Ha habido un error al crear la tabla");
+            ex.printStackTrace();
+        }    			
+    }
+    
+    /**
+     * Busca una fila concreta en una tabla y la muestra
+     * 
+     * @param nombreTabla. nombre de la tabla en la que buscar la fila
+     * @param numero. numero de la fila que buscar
+     */
+    public static void filtrarFilas(String nombreTabla, int numero)
+    {
+    	try 
+        {
+    		System.out.println("Filtrar filas de la tabla " + nombreTabla + "... ");     
+        	String sql = DB_SELECT + nombreTabla;
+    		PreparedStatement pstmt = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE,  ResultSet.CONCUR_READ_ONLY);
+    		ResultSet rs = pstmt.executeQuery();
+    		
+    		if (rs == null ) //Si no encuentra la fila
+    		{
+                System.out.println("Fila no encontrada");
+                return;
+            }
+    		
+    		if (rs.absolute(numero)) 
+    		{
+    			int cid = rs.getInt(DB_CLI_ID);
+                String nombre = rs.getString(DB_CLI_NOM);
+                String direccion = rs.getString(DB_CLI_DIR);
+                System.out.println("Cliente " + cid + "\t" + nombre + "\t" + direccion);
+            } 
+        } 
+        catch (SQLException ex) {
+        	System.out.println("Exception. Ha habido un error al filtrar las filas");
+            ex.printStackTrace();
+        }    			
     }
 }
