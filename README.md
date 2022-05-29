@@ -48,4 +48,7 @@ ya que ahora puede trabajar con distintas bases de datos y tablas
 OTRAS TAREAS:
 Generamos la documentacion Javadoc
 Realizamos las pruebas JUnit
+Crear los diagramas UML 
+En la carpeta esta el archivo .uml que puedes abrir desde cualquier aplicacion para crear UML o desde eclipse (puede que necesites descargar un plugin primero)
+tambien esta en formato pdf para que puedas abrirlo con cualquier lector de pdf
 Editamos el Readme para ordenarlo y presentarlo adecuadamente como memoria breve
