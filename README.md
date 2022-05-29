@@ -3,7 +3,8 @@ Practica combinada de Entornos de Desarrollo y Base de Datos para la Evaluación
 
 Comenzamos importando la base de datos "tienda" https://github.com/mariannsss/Practica_combinada_final/blob/main/tienda.sql a nuestro servidor MySQL.
 
-A continuación para poder conectarse la base de datos MySQL o MariaDb desde eclipse, necesitaremos el driver mysql-connector de Java https://github.com/mariannsss/Practica_combinada_final/blob/main/mysql-connector-java-8.0.29.jar, deberás añadirlo a la libreria del proyecto de java.
+A continuación para poder conectarse la base de datos MySQL o MariaDb desde eclipse, necesitaremos el driver mysql-connector de Java https://github.com/mariannsss/Practica_combinada_final/blob/main/mysql-connector-java-8.0.29.jar, deberás añadirlo a la libreria del proyecto de java,
+en propiedades del proyecto en la ruta de construccion de Java (java Build Path) hay que añadir la libreria a la ruta de acceso de clases (classpath).
 
 A la hora de descargar y usar el programa tiene que tener en cuenta donde tiene la base de datos, el puerto de MySQL y su usuario y contraseña de los mismos.
 Estos datos pueden ser cambiados al principio de la clase DBManager
