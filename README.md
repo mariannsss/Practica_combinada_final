@@ -21,3 +21,9 @@ Creamos una nueva opción en el menu para mostrar los primeros 5 clientes usando
 Creamos una nueva opcion en el menu para crear una tabla nueva 
 Creamos una nueva opcion en el menu para filtrar filas
 Creamos un nuevo menu para elegir base de datos y una nueva clase BBDD
+
+Sacamos el menu de la clase GestionClientes y le ponemos e su propia clase Menu
+Creamos nueva opcion en el menu para seleccionar la base de datos
+Modificamos el programa para que al inicio pregunte por la base de datos y la tabla
+Creamos una nueva opcion en el menu para volcar el contenido de una tabla en un fichero
+Creamos una nueva clase MenuTest para realizar las pruebas JUnit
