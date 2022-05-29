@@ -1,12 +1,8 @@
 import GestionBD.BBDD;
 import GestionBD.DBManager;
-
-import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 
 /**
  * Clase de pruebas JUnit
@@ -35,31 +31,31 @@ class MenuTest
 	@Test
 	public void test_opcionMostrarClientes() 
 	{
-		GestionClientes.opcionMostrarClientes(bbdd.SELECT_TABLA());	
+		Gestion.opcionMostrarTabla(bbdd.SELECT_TABLA());	
 	} 
 
 	@Test
 	public void test_opcionNuevoCliente() 
 	{		
-		DBManager.insertCliente("Jose", "Malaga",bbdd.INSERT_TABLA());		
+		DBManager.insertTupla("Jose", "Malaga",bbdd.INSERT_TABLA());		
 	}
 	
 	@Test
 	public void test_opcionModificarCliente() 
 	{		
-		DBManager.updateCliente(1, bbdd.SELECT_TABLA(),"Ana", "Sevilla");		
+		DBManager.updateTupla(1, bbdd.SELECT_TABLA(),"Ana", "Sevilla");		
 	}
 	
 	@Test
 	public void test_opcionEliminarCliente() //si se lanza mas de una vez falla el test
 	{		
-		DBManager.deleteCliente(4, bbdd.SELECT_TABLA());		
+		DBManager.deleteTupla(4, bbdd.SELECT_TABLA());		
 	}
 
 	@Test
 	public void test_opcionPrimerosClientes() 
 	{		
-		GestionClientes.opcionPrimerosClientes();
+		Gestion.opcionPrimerosClientes();
 	}	
 	
 	@Test

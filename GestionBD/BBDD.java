@@ -4,7 +4,7 @@ package GestionBD;
  * Clase que interactua con la BBDD
  * 
  * @author Mariannsss
- * @version 1.1
+ * @version 1.2
  */
 public class BBDD 
 {	
@@ -16,7 +16,7 @@ public class BBDD
 	private String nombreBBDD;
 	private String nombreTabla;
 	
-	
+	//constructor
 	public BBDD(String nombreBBDD, String nombreTabla) 
 	{
 		this.nombreBBDD = nombreBBDD;
@@ -46,24 +46,30 @@ public class BBDD
 
 	/**
 	 * Imprime el nombre de la BBDD y la tabla
+	 * 
+	 * @author Mariannsss
+	 * @version 1.1
 	 */
 	@Override
-	public String toString() {
+	public String toString() 
+	{
 		return "nombre de la BBDD: " + nombreBBDD + ", nombre de la Tabla: " + nombreTabla;
 	}
 	
-	public String INSERT_TABLA() {		
+	/**
+	 * Consusltar
+	 * @return devuelve la consulta
+	 * 
+	 * @author Mariannsss
+	 * @version 1.1
+	 */
+	public String INSERT_TABLA() 
+	{		
 		return "INSERT INTO " + this.nombreTabla + "(nombre, direccion) VALUES (?, ?)";		
 	}
 	
-	public String SELECT_TABLA() {		
+	public String SELECT_TABLA() 
+	{		
 		return "SELECT * FROM " + this.nombreTabla;		
 	}
-	
-	public String WHERE() {
-		return "WHERE nombre = ? AND direccion = ?";
-	}
-	
-	
-	
 }

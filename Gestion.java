@@ -3,18 +3,18 @@ import GestionBD.BBDD;
 import java.util.Scanner;
 
 /**
- *Esta clase se encarga de interactuar con el cliente y llamar a los metodos de la clase DBManager
+ *Esta clase se encarga de interactuar con el usuario y llamar a los metodos de la clase DBManager
  *
  * @author marian
  * @version 2.1
  */
-public class GestionClientes 
+public class Gestion 
 {
 	/**
 	 * Clase principal. Establece la conexion y llama al menu
 	 * 
 	 * @author Marian
-	 * @version 1.1
+	 * @version 2.2
 	 * @param args
 	 */
     public static void main(String[] args) 
@@ -85,99 +85,81 @@ public class GestionClientes
     }
 
     /**
-     * Llama a printTablaClientes y muestra la tabla clientes
+     * Llama a printTabla y muestra la tabla
      * 
      * @author marian
-     * @version 1.1
+     * @version 1.2
      */
-    public static void opcionMostrarClientes(String SELECT_TABLA) 
+    public static void opcionMostrarTabla(String SELECT_TABLA) 
     {
         System.out.println();
     	System.out.println("Listado de Clientes:");
-        DBManager.printTablaClientes(SELECT_TABLA);
+        DBManager.printTabla(SELECT_TABLA);
     }
 
     /**
-     * Pide los datos para crear un nuevo registro en la tabla clientes
+     * Pide los datos para crear un nuevo registro en la tabla
      * llama a pideLinea para obtener los parametros necesarios
-     * llama a insertCliente para insertar el nuevo cliente
+     * llama a insertCliente para insertar el nuevo registro
      * 
      * @author marian
-     * @version 1.1
+     * @version 1.2
      */
-    public static void opcionNuevoCliente(String INSERT_TABLA) 
+    public static void opcionNuevoRegistro(String INSERT_TABLA) 
     {
         Scanner in = new Scanner(System.in);
 
         System.out.println();
-        System.out.println("Introduce los datos del nuevo cliente:");
-        String nombre = pideLinea("Nombre: ");
-        String direccion = pideLinea("Direccion: ");
+        System.out.println("Introduce los datos del nuevo registro:");
+        String col2 = pideLinea("Columna 2: ");
+        String col3 = pideLinea("columna 3: ");
 
-        boolean res = DBManager.insertCliente(nombre, direccion, INSERT_TABLA);
-
-        if (res) 
-        {
-            System.out.println("Cliente registrado correctamente");
-        } 
-        else 
-        {
-            System.out.println("Error :(");
-        }
+        DBManager.insertTupla(col2, col3, INSERT_TABLA);
     }
 
     /**
-     * Modifica un cliente de la tabla clientes
-     * llama a pideInt para obtener el id del cliente a modificar
+     * Modifica un registro de la tabla
+     * llama a pideInt para obtener el id del registro a modificar
      * llama a pideLinea para obtener los los nuevos valores
-     * llama a updateCliente para actualizar los datos del cliente
+     * llama a updateCliente para actualizar los datos
      * 
      * @author marian
-     * @version 1.1
+     * @version 1.2
      */
-    public static void opcionModificarCliente(String SELECT_TABLA) 
+    public static void opcionModificarRegistro(String SELECT_TABLA) 
     {
         Scanner in = new Scanner(System.in);
 
-        int id = pideInt("Indica el id del cliente a modificar: ");
+        int id = pideInt("Indica el id del registro a modificar: ");
         System.out.println();
 
-        // Comprobamos si existe el cliente
-        if (!DBManager.existsCliente(id, SELECT_TABLA)) 
+        // Comprobamos si existe el registro
+        if (!DBManager.existsTupla(id, SELECT_TABLA)) 
         {
-            System.out.println("El cliente " + id + " no existe.");
+            System.out.println(id + " no existe.");
             return;
         }
 
-        // Mostramos datos del cliente a modificar
-        DBManager.printCliente(id, SELECT_TABLA);
+        // Mostramos datos del registro a modificar
+        DBManager.printTupla(id, SELECT_TABLA);
 
         // Solicitamos los nuevos datos
-        String nombre = pideLinea("Nuevo nombre: ");
-        String direccion = pideLinea("Nueva direccion: ");
+        String col2 = pideLinea("Nuevo campo de la columna 2: ");
+        String col3 = pideLinea("Nuevo campo de la columna 3: ");
 
         // Registramos los cambios
-        boolean res = DBManager.updateCliente(id, nombre, direccion, SELECT_TABLA);
-
-        if (res) 
-        {
-            System.out.println("Cliente modificado correctamente");
-        } 
-        else 
-        {
-            System.out.println("Error :(");
-        }
+        DBManager.updateTupla(id, col2, col3, SELECT_TABLA);
     }
 
     /**
-     * Elimina un cliente de la tabla clientes
-     * llama a pideInt para obtener el id del cliente a borrar
-     * llama a deleteCliente para borrar el cliente indicado
+     * Elimina un registro de la tabla
+     * llama a pideInt para obtener el id del registro a borrar
+     * llama a deleteTupla para borrar el registro indicado
      * 
      * @author marian
-     * @version 1.1
+     * @version 1.2
      */
-    public static void opcionEliminarCliente(String SELECT_TABLA) 
+    public static void opcionEliminarRegistro(String SELECT_TABLA) 
     {
         Scanner in = new Scanner(System.in);
 
@@ -185,23 +167,14 @@ public class GestionClientes
         System.out.println();
 
         // Comprobamos si existe el cliente
-        if (!DBManager.existsCliente(id, SELECT_TABLA)) 
+        if (!DBManager.existsTupla(id, SELECT_TABLA)) 
         {
             System.out.println("El cliente " + id + " no existe.");
             return;
         }
 
         // Eliminamos el cliente
-        boolean res = DBManager.deleteCliente(id, SELECT_TABLA);
-
-        if (res) 
-        {
-            System.out.println("Cliente eliminado correctamente");
-        } 
-        else 
-        {
-            System.out.println("Error :(");
-        }
+        DBManager.deleteTupla(id, SELECT_TABLA);
     }
     
     /**
@@ -256,13 +229,51 @@ public class GestionClientes
     }
     
     /**
+     * Vuelca los datos de una tabla en un fichero
+     * Llama a volcarEnFichero para volcar el fichero
      * 
      * @author marian
      * @version 1.1 
-     * @param bbdd
+     * @param bbdd. Base de datos
      */
     public static void opcionVolcarEnFichero(BBDD bbdd)
     {
     	DBManager.volcarEnFichero (bbdd);
+    }
+    
+    /**
+     * Inserta los datos de un fichero en una tabla
+     * Llama a insertardeFichero para insertar los datos
+     * 
+     * @author marian
+     * @version 1.1 
+     */
+    public static void opcionInsertardeFichero()
+    {
+    	DBManager.insertardeFichero();
+    }
+    
+    /**
+     * Actualiza los datos de una tabla con los datos de un fichero
+     * Llama a actualizarFichero para actualizar los datos
+     * 
+     * @author marian
+     * @version 1.1 
+     */
+    public static void opcionActualizarFichero()
+    {
+    	DBManager.actualizarFichero();
+    }
+    
+    /**
+     * Borra los datos de una tabla con los datos de un fichero
+     * Llama a borrarFichero para borrar los datos
+     * 
+     * @author marian
+     * @version 1.1 
+     */
+    public static void opcionBorrarFichero()
+    {
+    	DBManager.borrarFichero();
     }
 }
