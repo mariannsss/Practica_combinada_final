@@ -1,5 +1,14 @@
 package GestionBD;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.*;
+
+import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvValidationException;
 
 /**
  * Esta clase se encarga de interactuar con la Base de Datos
@@ -9,7 +18,7 @@ import java.sql.*;
  */
 public class DBManager {
 
-    // Conexion a la base de datos
+	 // Conexion a la base de datos
     private static Connection conn = null;
 
     // Configuracion de la conexion a la base de datos
@@ -22,12 +31,15 @@ public class DBManager {
     private static final String DB_MSQ_CONN_OK = "CONEXION CORRECTA";
     private static final String DB_MSQ_CONN_NO = "ERROR EN LA CONEXION";
 
+    private static final String DB_SELECT_GENERICO = "SELECT * FROM ";
+    
     // Configuracion de la tabla Clientes
-    private static final String DB_CLI = "clientes";
-    private static final String DB_CLI_INSERT = "INSERT INTO clientes (nombre, direccion) VALUES (?, ?)";
-    private static final String DB_CLI_SELECT = "SELECT * FROM " + DB_CLI;
-    private static final String DB_SELECT = "SELECT * FROM ";
-    private static final String DB_CLI_WHERE = "WHERE nombre = ? AND direccion = ?";
+    //private static final String DB_CLI_WHERE = "WHERE nombre = ? AND direccion = ?";
+    //private static final String DB_CLI = "clientes";
+    //private static final String DB_CLI_INSERT = "INSERT INTO clientes (nombre, direccion) VALUES (?, ?)";
+    //private static final String DB_CLI_SELECT = "SELECT * FROM " + DB_CLI;
+    
+   
     private static final String DB_CLI_ID = "id";
     private static final String DB_CLI_NOM = "nombre";
     private static final String DB_CLI_DIR = "direccion";
@@ -161,11 +173,11 @@ public class DBManager {
      * @return ResultSet (del tipo indicado) con la tabla, null en caso de error
      * @throws SQLException.
      */
-    public static ResultSet getTablaClientes(int resultSetType, int resultSetConcurrency) 
+    public static ResultSet getTablaClientes(int resultSetType, int resultSetConcurrency, String SELECT_TABLA) 
     {
         try 
         {
-        	PreparedStatement pstmt = conn.prepareStatement(DB_CLI_SELECT, resultSetType, resultSetConcurrency);
+        	PreparedStatement pstmt = conn.prepareStatement(SELECT_TABLA, resultSetType, resultSetConcurrency);
             ResultSet rs = pstmt.executeQuery();
             return rs;
         } 
@@ -183,11 +195,11 @@ public class DBManager {
      * @version 1.2
      * @throws SQLException
      */
-    public static void printTablaClientes() 
+    public static void printTablaClientes(String SELECT_TABLA) 
     {
         try 
         {
-            ResultSet rs = getTablaClientes(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+            ResultSet rs = getTablaClientes(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY,SELECT_TABLA);
             while (rs.next()) 
             {
                 int id = rs.getInt(DB_CLI_ID);
@@ -217,12 +229,12 @@ public class DBManager {
      * @return ResultSet con el resultado de la consulta, null en caso de error
      * @throws SQLException
      */
-    public static ResultSet getCliente(int id) 
+    public static ResultSet getCliente(int id, String SELECT_TABLA) 
     {
         try 
         {
             // Realizamos la consulta SQL
-        	String sql = DB_CLI_SELECT + " WHERE " + DB_CLI_ID + "='" + id + "';";
+        	String sql = SELECT_TABLA + " WHERE " + DB_CLI_ID + "='" + id + "';";
         	PreparedStatement pstmt = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);            
             ResultSet rs = pstmt.executeQuery();
             
@@ -252,12 +264,12 @@ public class DBManager {
      * @return verdadero si existe, false en caso contrario
      * @throws SQLException
      */
-    public static boolean existsCliente(int id) 
+    public static boolean existsCliente(int id, String SELECT_TABLA) 
     {
         try 
         {
             // Obtenemos el cliente
-            ResultSet rs = getCliente(id);
+            ResultSet rs = getCliente(id, SELECT_TABLA);
 
             // Si rs es null, se ha producido un error
             if (rs == null) 
@@ -295,12 +307,12 @@ public class DBManager {
      * @param id id del cliente
      * @throws SQLException
      */
-    public static void printCliente(int id) 
+    public static void printCliente(int id, String SELECT_TABLA) 
     {
         try 
         {
             // Obtenemos el cliente
-            ResultSet rs = getCliente(id);
+            ResultSet rs = getCliente(id, SELECT_TABLA);
             
             //si no esta el cliente
             if (rs == null || !rs.first()) 
@@ -332,13 +344,13 @@ public class DBManager {
      * @return verdadero si pudo insertarlo, false en caso contrario
      * @throws SQLException
      */
-    public static boolean insertCliente(String nombre, String direccion) 
+    public static boolean insertCliente(String nombre, String direccion, String INSERT_TABLA) 
     {
         try 
         {
             // Obtenemos la tabla clientes
             System.out.print("Insertando cliente " + nombre + "...");            
-            PreparedStatement pstmt = conn.prepareStatement(DB_CLI_INSERT, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
+            PreparedStatement pstmt = conn.prepareStatement(INSERT_TABLA, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
             
             //Insertamos el nuevo cliente
             pstmt.setString(1, nombre);
@@ -368,13 +380,13 @@ public class DBManager {
      * @return verdadero si pudo modificarlo, false en caso contrario
      * @throws SQLException
      */
-    public static boolean updateCliente(int id, String nuevoNombre, String nuevaDireccion) 
+    public static boolean updateCliente(int id, String nuevoNombre, String nuevaDireccion, String SELECT_TABLA) 
     {
         try 
         {
             // Obtenemos el cliente
             System.out.print("Actualizando cliente " + id + "... ");
-            ResultSet rs = getCliente(id);
+            ResultSet rs = getCliente(id, SELECT_TABLA);
 
             // Si no existe el Resultset
             if (rs == null) 
@@ -416,14 +428,14 @@ public class DBManager {
      * @return verdadero si pudo eliminarlo, false en caso contrario
      * @throws SQLException
      */
-    public static boolean deleteCliente(int id) 
+    public static boolean deleteCliente(int id, String SELECT_TABLA) 
     {
         try 
         {
             System.out.print("Eliminando cliente " + id + "... ");
 
             // Obtenemos el cliente
-            ResultSet rs = getCliente(id);
+            ResultSet rs = getCliente(id, SELECT_TABLA);
 
             // Si no existe el Resultset
             if (rs == null) 
@@ -525,7 +537,7 @@ public class DBManager {
     	try 
         {
     		System.out.println("Filtrar filas de la tabla " + nombreTabla + "... ");     
-        	String sql = DB_SELECT + nombreTabla;
+        	String sql = DB_SELECT_GENERICO + nombreTabla;
     		PreparedStatement pstmt = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE,  ResultSet.CONCUR_READ_ONLY);
     		ResultSet rs = pstmt.executeQuery();
     		
@@ -548,4 +560,38 @@ public class DBManager {
             ex.printStackTrace();
         }    			
     }
+    
+    public static void volcarEnFichero (BBDD bbdd)
+    {
+    	File destino = new File("DatosTabla.txt"); //crear la ruta donde guardar los datos
+		FileWriter escribir;
+    	
+    	try 
+        {
+    		escribir = new FileWriter(destino);
+            ResultSet rs = getTablaClientes(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY,bbdd.SELECT_TABLA());
+            
+            escribir.write(bbdd.getNombreBBDD() + "," + bbdd.getNombreTabla() +"\n");
+            escribir.write(BBDD.DB_CLI_ID + "," + BBDD.DB_CLI_NOM  + "," + BBDD.DB_CLI_DIR +"\n");
+            while (rs.next()) 
+            {
+            	escribir.write(rs.getInt(DB_CLI_ID) + "," + 
+            			rs.getString(DB_CLI_NOM) + "," + 
+            			rs.getString(DB_CLI_DIR) + "\n");
+            }
+            escribir.close();
+            rs.close();
+        } 
+        catch (SQLException ex) {
+        	System.out.println("Exception. Ha habido un error al mostrar la tabla");
+            ex.printStackTrace();
+        }
+    	catch (IOException e) //E/S fallidas o interrumpidas, lanza una excepción
+		{
+			System.err.println("E/S fallidas o interrumpidas");
+			e.printStackTrace();
+		} 
+    }
+    
+    
 }

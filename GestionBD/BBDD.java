@@ -1,45 +1,69 @@
 package GestionBD;
 
-import java.util.HashMap;
-
-public class BBDD {
+/**
+ * Clase que interactua con la BBDD
+ * 
+ * @author Mariannsss
+ * @version 1.1
+ */
+public class BBDD 
+{	
+	// Configuracion de la tabla Clientes
+    public static final String DB_CLI_ID = "id";
+    public static final String DB_CLI_NOM = "nombre";
+    public static final String DB_CLI_DIR = "direccion";
 	
-	private String nombre;
-	//private HashMap<String,?> listaCampos;
-
-	public BBDD(String nombre) {
-		this.nombre = nombre;
-	}	
-	
-	/*
-	public BBDD(String nombre, HashMap<String, ?> listaCampos) {
-		super();
-		this.nombre = nombre;
-		this.listaCampos = listaCampos;
-	}
-
-
-	public HashMap<String, ?> getListaCampos() {
-		return listaCampos;
-	}
-
-	public void setListaCampos(HashMap<String, ?> listaCampos) {
-		this.listaCampos = listaCampos;
-	}	*/
-
-	public String getNombre() {
-		return nombre;
-	}
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
+	private String nombreBBDD;
+	private String nombreTabla;
 	
 	
+	public BBDD(String nombreBBDD, String nombreTabla) 
+	{
+		this.nombreBBDD = nombreBBDD;
+		this.nombreTabla = nombreTabla;
+	}
 
+	public String getNombreBBDD() {
+		return nombreBBDD;
+	}
+
+	public void setNombreBBDD(String nombreBBDD) {
+		this.nombreBBDD = nombreBBDD;
+	}
+	
+	public String getNombreTabla() {
+		return nombreTabla;
+	}
+
+	public void setTabla(String nombreTabla) {
+		this.nombreTabla = nombreTabla;
+	}
+		
+//////////////////////////////////////////////////
+// METODOS DE LA BASE DE DATOS
+//////////////////////////////////////////////////
+;
+
+	/**
+	 * Imprime el nombre de la BBDD y la tabla
+	 */
 	@Override
 	public String toString() {
-		return "BBDD [nombre=" + nombre + "]";
+		return "nombre de la BBDD: " + nombreBBDD + ", nombre de la Tabla: " + nombreTabla;
 	}
-
+	
+	public String INSERT_TABLA() {		
+		return "INSERT INTO " + this.nombreTabla + "(nombre, direccion) VALUES (?, ?)";		
+	}
+	
+	public String SELECT_TABLA() {		
+		return "SELECT * FROM " + this.nombreTabla;		
+	}
+	
+	public String WHERE() {
+		return "WHERE nombre = ? AND direccion = ?";
+	}
+	
+	
 	
 }

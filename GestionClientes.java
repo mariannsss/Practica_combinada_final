@@ -6,12 +6,10 @@ import java.util.Scanner;
  *Esta clase se encarga de interactuar con el cliente y llamar a los metodos de la clase DBManager
  *
  * @author marian
- * @version 1.1
+ * @version 2.1
  */
 public class GestionClientes 
 {
-	//private BBDD bbdd;
-	
 	/**
 	 * Clase principal. Establece la conexion y llama al menu
 	 * 
@@ -23,118 +21,15 @@ public class GestionClientes
     {
     	// Menu para seleccionar la BBDD
         boolean salir = false;
+        Menu menu = new Menu();
+        
         do 
         {
-            salir = menuBBDD();
-
-        } while (!salir);
-
-        salir = false;
-
-        do 
-        {
-            salir = menuPrincipal();
+            salir = menu.getMenuPrincipal();
             
         } while (!salir);
 
         DBManager.close(); //cierra la conexion
-    }
-    
-    /**
-     * Clase principal BBDD. Establece el nombre de la BBDD
-     * @author Marian
-	 * @version 1.1
-     * @return
-     */
-    public static boolean menuBBDD() 
-    {
-    	 System.out.println("");
-         System.out.println("MENU BBDD");
-         System.out.println("0. Salir");
-         System.out.println("1. nombre BBDD");
-         
-         Scanner in = new Scanner(System.in);
-         
-         System.out.println();
-         int opcion = pideInt("Elige una opcion (número): ");
-         
-         switch (opcion) 
-         {
- 	        case 0:
- 	            return true;
-             case 1:
-                DBManager.connect(nombreBBDD());
-                return false;
-             default:
-                 System.out.println("Opcion elegida incorrecta");
-                 return false;
-         }
-    }
-    
-    
-    public static String nombreBBDD() {
-    	
-        System.out.print("Indique el nombre de la BBDD: ");
-        Scanner in = new Scanner(System.in);
-        String nombre = in.nextLine();
-        return nombre;    	
-    }
-
-    /**
-     * Muestra el menu al usuario
-     * llama a pideInt para obtener la opcion elegida
-     * 
-     * @author Marian
-     * @version 1.2
-     * @return varia en cada opcion
-     */
-    public static boolean menuPrincipal() 
-    {
-        System.out.println("");
-        System.out.println("MENU PRINCIPAL");
-        System.out.println("0. Salir");
-        System.out.println("1. Listar clientes");
-        System.out.println("2. Nuevo cliente");
-        System.out.println("3. Modificar cliente");
-        System.out.println("4. Eliminar cliente");
-        System.out.println("5. Muestra los primeros 5 clientes"); //usa CallableStatement
-        System.out.println("6. Crear una Tabla nueva");
-        System.out.println("7. Filtrar filas de una tabla");
-        
-        Scanner in = new Scanner(System.in);
-            
-        System.out.println();
-        int opcion = pideInt("Elige una opcion (número): ");
-        
-        switch (opcion) 
-        {
-	        case 0:
-	            return true;
-            case 1:
-                opcionMostrarClientes();
-                return false;
-            case 2:
-                opcionNuevoCliente();
-                return false;
-            case 3:
-                opcionModificarCliente();
-                return false;
-            case 4:
-                opcionEliminarCliente();
-                return false;
-            case 5:
-            	opcionPrimerosClientes();
-            	return false;
-            case 6:
-            	opcionCrearTabla();
-            	return false;
-            case 7:
-            	opcionFiltrarFilas();
-            	return false;
-            default:
-                System.out.println("Opcion elegida incorrecta");
-                return false;
-        }        
     }
     
     /**
@@ -195,11 +90,11 @@ public class GestionClientes
      * @author marian
      * @version 1.1
      */
-    public static void opcionMostrarClientes() 
+    public static void opcionMostrarClientes(String SELECT_TABLA) 
     {
         System.out.println();
     	System.out.println("Listado de Clientes:");
-        DBManager.printTablaClientes();
+        DBManager.printTablaClientes(SELECT_TABLA);
     }
 
     /**
@@ -210,7 +105,7 @@ public class GestionClientes
      * @author marian
      * @version 1.1
      */
-    public static void opcionNuevoCliente() 
+    public static void opcionNuevoCliente(String INSERT_TABLA) 
     {
         Scanner in = new Scanner(System.in);
 
@@ -219,7 +114,7 @@ public class GestionClientes
         String nombre = pideLinea("Nombre: ");
         String direccion = pideLinea("Direccion: ");
 
-        boolean res = DBManager.insertCliente(nombre, direccion);
+        boolean res = DBManager.insertCliente(nombre, direccion, INSERT_TABLA);
 
         if (res) 
         {
@@ -240,7 +135,7 @@ public class GestionClientes
      * @author marian
      * @version 1.1
      */
-    public static void opcionModificarCliente() 
+    public static void opcionModificarCliente(String SELECT_TABLA) 
     {
         Scanner in = new Scanner(System.in);
 
@@ -248,21 +143,21 @@ public class GestionClientes
         System.out.println();
 
         // Comprobamos si existe el cliente
-        if (!DBManager.existsCliente(id)) 
+        if (!DBManager.existsCliente(id, SELECT_TABLA)) 
         {
             System.out.println("El cliente " + id + " no existe.");
             return;
         }
 
         // Mostramos datos del cliente a modificar
-        DBManager.printCliente(id);
+        DBManager.printCliente(id, SELECT_TABLA);
 
         // Solicitamos los nuevos datos
         String nombre = pideLinea("Nuevo nombre: ");
         String direccion = pideLinea("Nueva direccion: ");
 
         // Registramos los cambios
-        boolean res = DBManager.updateCliente(id, nombre, direccion);
+        boolean res = DBManager.updateCliente(id, nombre, direccion, SELECT_TABLA);
 
         if (res) 
         {
@@ -282,7 +177,7 @@ public class GestionClientes
      * @author marian
      * @version 1.1
      */
-    public static void opcionEliminarCliente() 
+    public static void opcionEliminarCliente(String SELECT_TABLA) 
     {
         Scanner in = new Scanner(System.in);
 
@@ -290,14 +185,14 @@ public class GestionClientes
         System.out.println();
 
         // Comprobamos si existe el cliente
-        if (!DBManager.existsCliente(id)) 
+        if (!DBManager.existsCliente(id, SELECT_TABLA)) 
         {
             System.out.println("El cliente " + id + " no existe.");
             return;
         }
 
         // Eliminamos el cliente
-        boolean res = DBManager.deleteCliente(id);
+        boolean res = DBManager.deleteCliente(id, SELECT_TABLA);
 
         if (res) 
         {
@@ -347,7 +242,7 @@ public class GestionClientes
      * llama a filtrarFilas para buscar la fila
      * 
      * @author marian
-     * @version 1.1     * 
+     * @version 1.1 
      */
     public static void opcionFiltrarFilas ()
     {
@@ -358,5 +253,16 @@ public class GestionClientes
         int numero = pideInt("Numero de fila que desea ver: ");
         
         DBManager.filtrarFilas(nombreTab, numero);
+    }
+    
+    /**
+     * 
+     * @author marian
+     * @version 1.1 
+     * @param bbdd
+     */
+    public static void opcionVolcarEnFichero(BBDD bbdd)
+    {
+    	DBManager.volcarEnFichero (bbdd);
     }
 }
